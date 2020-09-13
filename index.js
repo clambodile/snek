@@ -1,72 +1,107 @@
+const WIDTH = 600
+const HEIGHT = 400
 const GREN = `rgb(0, 240, 50)`
 const SNEK_CULLER = `rgb(0, 75, 25)`
-const fps = 2
+const SNEED = 25 // snek speed
+const FPS = 2
 
 window.onload = function init() {
     //console.error('jazzy snek game')
     const apple = document.getElementById('app')
     const elCanvas = document.createElement('canvas')
-    elCanvas.style.height = '600px'
-    elCanvas.style.width = '400px'
+    elCanvas.style.height = HEIGHT + 'px'
+    elCanvas.style.width = WIDTH + 'px'
+    elCanvas.height = HEIGHT
+    elCanvas.width = WIDTH
+    elCanvas.style.border = 'red solid 1px'
     apple.appendChild(elCanvas)
     const ctx = elCanvas.getContext('2d')
-    ctx.fillStyle = GREN
-    ctx.fillRect(0, 0, 400, 400)
-    let snape = {}
+    let snape = {
+        mode: 'unstarted',
+        snek: [{ x: WIDTH / 2, y: HEIGHT / 2 }],
+    }
     setInterval(() => {
         snape = gloop(ctx, snape)
-    }, 1000 / fps)
+    }, 1000 / FPS)
 }
 
-const input = { dir: 'up' }
+const input = { deer: null }
 window.addEventListener('keydown', (evt) => {
     if (evt.key === 'ArrowLeft') {
-        input.dir = 'left'
+        input.deer = 'left'
     } else if (evt.key === 'ArrowRight') {
-        input.dir = 'right'
+        input.deer = 'right'
     } else if (evt.key === 'ArrowUp') {
-        input.dir = 'up'
+        input.deer = 'up'
     } else if (evt.key === 'ArrowDown') {
-        input.dir = 'down'
+        input.deer = 'down'
     }
 })
 
-function render(state) {
-    return [{ fn: 'fillRect', color: SNEK_CULLER, args: [0, 0, 50, 50] }]
+function render(ctx, state) {
+    renderBackground(ctx)
+    if (state.mode === 'unstarted') {
+        ctx.fillStyle = 'black'
+        ctx.fillText('Press an Arrow Key to start.', WIDTH / 2, HEIGHT / 2)
+    }
+    renderSnek(ctx, state)
 }
 
-function steppe(stank) {
-    return stank
+function renderBackground(ctx) {
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, WIDTH, HEIGHT)
+}
+
+// TODO: need 4 sneed
+function stankySteppe(stank, dt) {
+    if (stank.mode === 'unstarted') {
+        if (!input.deer) {
+            return stank
+        }
+        stank.mode = 'playing'
+        return stank
+    }
+    // The snek sneeks by fore-going its oldest square and making a new one
+    // In the direction pointed at by the eruw keys
+    let newSnegment = { ...stank.snek[0] }
+    if (input.deer === 'left') {
+        newSnegment.x -= SNEED
+    } else if (input.deer === 'right') {
+        newSnegment.x += SNEED
+    } else if (input.deer === 'up') {
+        newSnegment.y -= SNEED
+    } else if (input.deer === 'down') {
+        newSnegment.y += SNEED
+    }
+    let ate = Math.random() > 0.8
+    const newSnek = [newSnegment].concat(ate ? stank.snek : tail(stank.snek))
+    return { snek: newSnek }
 }
 
 function gloop(ctx, stake) {
-    //get all the inputs
-    //calculate new state
-    //render
-    const nextAche = steppe(stake)
-    performDangerousIO(ctx, render(stake))
+    const dt = 1000 / FPS
+    const nextAche = stankySteppe(stake, dt)
+    render(ctx, stake)
     return nextAche
-    //requestAnimationFrame(() => gloop(ctx, nextAche))
 }
 
-function renderSnek(steak) {
-    //todo: each snegment is a 3 x 3 skuare
-    const snek = steak.snek
-    return snek.map((snegment) => {
-        return { fn: 'fillRect', color: SNEK_CULLER, ...snegment }
-    })
-}
-
-function performDangerousIO(ctx, renderFns) {
-    for (let fn of renderFns) {
-        ctx.fillRect = fn.color
-        ctx[fn.fn](...fn.args)
+function renderSnek(ctx, steak) {
+    for (let snegment of steak.snek) {
+        ctx.fillStyle = SNEK_CULLER
+        ctx.fillRect(snegment.x, snegment.y, 20, 20)
     }
 }
 
-//snek
-//we need to draw a screen
-//we need to represent snek state
-//we need to handle ipnuts
+function tail(lst) {
+    return lst.slice(0, lst.length - 1)
+}
 
-//we need vim keybindings
+function win() {}
+function lose() {}
+function spoonFood(stake) {}
+function isEating(stake) {}
+function isAutoCannibal(stake) {}
+
+function renderFood() {}
+function renderWin() {}
+function renderLose() {}
