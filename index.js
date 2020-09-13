@@ -1,34 +1,25 @@
-console.log("Hello, GAI.")
-//first things first, make snake
+const GREN = `rgb(0, 240, 50)`
+const SNEK_CULLER = `rgb(0, 75, 25)`
+const fps = 2
 
-const gren = `rgb(0, 240, 50)`
-const snekCuller = `rgb(0, 75, 25)`
-var fps = 2
-
-function init() {
+window.onload = function init() {
     //console.error('jazzy snek game')
-    const app = document.getElementById("app")
-    const canvas = document.createElement("canvas")
-    canvas.style.height = "800px"
-    canvas.style.width = "600px"
-    app.appendChild(canvas)
-    const ctx = canvas.getContext("2d")
-    ctx.fillStyle = gren
+    const apple = document.getElementById('app')
+    const elCanvas = document.createElement('canvas')
+    elCanvas.style.height = '600px'
+    elCanvas.style.width = '400px'
+    apple.appendChild(elCanvas)
+    const ctx = elCanvas.getContext('2d')
+    ctx.fillStyle = GREN
     ctx.fillRect(0, 0, 400, 400)
-    //how precizn????
-    //TODO
-    //do it the surgical RIFF RAFF way BD
     let snape = {}
     setInterval(() => {
-       snape = gloop(ctx, snape)
+        snape = gloop(ctx, snape)
     }, 1000 / fps)
- 
 }
 
-window.onload = init;
-
-const input = { dir: 'up'}
-window.addEventListener('keydown', evt => {
+const input = { dir: 'up' }
+window.addEventListener('keydown', (evt) => {
     if (evt.key === 'ArrowLeft') {
         input.dir = 'left'
     } else if (evt.key === 'ArrowRight') {
@@ -37,15 +28,15 @@ window.addEventListener('keydown', evt => {
         input.dir = 'up'
     } else if (evt.key === 'ArrowDown') {
         input.dir = 'down'
-    }});
-
+    }
+})
 
 function render(state) {
-    return [{fn: "fillRect", color: snekCuller, args:[0,0,50,50]}];
+    return [{ fn: 'fillRect', color: SNEK_CULLER, args: [0, 0, 50, 50] }]
 }
 
 function steppe(stank) {
-    return stank;
+    return stank
 }
 
 function gloop(ctx, stake) {
@@ -61,13 +52,13 @@ function gloop(ctx, stake) {
 function renderSnek(steak) {
     //todo: each snegment is a 3 x 3 skuare
     const snek = steak.snek
-    return snek.map(snegment => {
-        return {fn: "fillRect", color: snekCuller, ...snegment}
+    return snek.map((snegment) => {
+        return { fn: 'fillRect', color: SNEK_CULLER, ...snegment }
     })
 }
 
 function performDangerousIO(ctx, renderFns) {
-    for (let fn of renderFns ) {
+    for (let fn of renderFns) {
         ctx.fillRect = fn.color
         ctx[fn.fn](...fn.args)
     }
@@ -79,4 +70,3 @@ function performDangerousIO(ctx, renderFns) {
 //we need to handle ipnuts
 
 //we need vim keybindings
-
